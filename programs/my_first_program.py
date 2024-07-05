@@ -1,18 +1,6 @@
 from nada_dsl import *
 
 def return_val_if_any_false(list_of_bool, val):
-    """
-    Returns val if any boolean inside list_of_bool is false.
-
-    Parameters:
-    - list_of_bool (list of bool): List of boolean values to be checked.
-    - val: Value to be returned if any boolean in the list is false.
-
-    Returns:
-    - val: If any boolean in the list is false.
-    - 0: If none of the booleans in the list are false.
-    """
-
     final_value = UnsignedInteger(0)
     for bool in list_of_bool:
         final_value = bool.if_else(final_value, val)
@@ -20,15 +8,6 @@ def return_val_if_any_false(list_of_bool, val):
     return final_value
 
 def initialize_voters(nr_voters):
-    """
-    Initialize voters with unique identifiers.
-
-    Parameters:
-    - nr_voters (int): Number of voters.
-
-    Returns:
-    - voters (list): List of Party objects representing voters.
-    """
     voters = []
     for i in range(nr_voters):
         voters.append(Party(name="Voter" + str(i)))
@@ -36,16 +15,6 @@ def initialize_voters(nr_voters):
     return voters
 
 def inputs_initialization(nr_voters, nr_candidates, voters):
-    """
-    Initialize inputs for votes per candidate.
-
-    Parameters:
-    - nr_voters (int): Number of voters.
-    - nr_candidates (int): Number of candidates.
-
-    Returns:
-    - votes_per_candidate (list): List of lists representing votes per candidate.
-    """
     votes_per_candidate = []
     for c in range(nr_candidates):
         votes_per_candidate.append([])
@@ -59,17 +28,6 @@ def inputs_initialization(nr_voters, nr_candidates, voters):
     return votes_per_candidate
 
 def count_votes(nr_voters, nr_candidates, votes_per_candidate, outparty):
-    """
-    Count votes for each candidate.
-
-    Parameters:
-    - nr_voters (int): Number of voters.
-    - nr_candidates (int): Number of candidates.
-    - votes_per_candidate (list): List of lists representing votes per candidate.
-
-    Returns:
-    - votes (list): List of Output objects representing vote counts for each candidate.
-    """
     votes = []
     for c in range(nr_candidates):
         result = votes_per_candidate[c][0]
@@ -80,18 +38,6 @@ def count_votes(nr_voters, nr_candidates, votes_per_candidate, outparty):
     return votes
 
 def fn_check_sum(nr_voters, nr_candidates, votes_per_candidate, outparty):
-    """
-    Check the sum of votes for each voter.
-
-    Parameters:
-    - nr_voters (int): Number of voters.
-    - nr_candidates (int): Number of candidates.
-    - votes_per_candidate (list): List of lists representing votes per candidate.
-
-    Returns:
-    - check_sum (list): List of Output objects representing the sum checks for each voter.
-    - if_sum_cheat_open (list): List of Output objects representing revealed votes of cheating voters.
-    """
     check_sum = []
     if_sum_cheat_open = []
     for v in range(nr_voters):
@@ -115,18 +61,6 @@ def fn_check_sum(nr_voters, nr_candidates, votes_per_candidate, outparty):
     return check_sum, if_sum_cheat_open
 
 def fn_check_prod(nr_voters, nr_candidates, votes_per_candidate, outparty):
-    """
-    Check the product of votes for each voter.
-
-    Parameters:
-    - nr_voters (int): Number of voters.
-    - nr_candidates (int): Number of candidates.
-    - votes_per_candidate (list): List of lists representing votes per candidate.
-
-    Returns:
-    - check_prod (list): List of Output objects representing the product checks for each voter.
-    - if_prod_cheat_open (list): List of Output objects representing revealed votes of cheating voters.
-    """
     check_prod = []
     if_prod_cheat_open = []
     all_comp_prod = []
@@ -153,25 +87,18 @@ def fn_check_prod(nr_voters, nr_candidates, votes_per_candidate, outparty):
     return check_prod, if_prod_cheat_open
 
 def nada_main():
-    # 0. Compiled-time constants
     nr_voters = 3
     nr_candidates = 2
 
-    # 1. Parties initialization
     voters = initialize_voters(nr_voters)
     outparty = Party(name="OutParty")
 
-    # 2. Inputs initialization
     votes_per_candidate = inputs_initialization(nr_voters, nr_candidates, voters)
 
-    # 3. Computation
-    # Honest Voting Count
     votes = count_votes(nr_voters, nr_candidates, votes_per_candidate, outparty)
 
-    # Dishonest Voting Check
     check_sum, if_sum_cheat_open = fn_check_sum(nr_voters, nr_candidates, votes_per_candidate, outparty)
     check_prod, if_prod_cheat_open = fn_check_prod(nr_voters, nr_candidates, votes_per_candidate, outparty)
 
-    # 4. Output
     results = votes + check_sum + if_sum_cheat_open + check_prod + if_prod_cheat_open
     return results
